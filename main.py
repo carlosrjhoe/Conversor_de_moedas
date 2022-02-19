@@ -1,10 +1,15 @@
 from tkinter import Tk, ttk
 from tkinter import *
 
-from numpy import place
+
 
 """ IMPORTANDO BIBLIOTECAS EXTERNAS """
+
 from PIL import Image, ImageTk, ImageOps, ImageDraw
+import requests
+import json
+import string
+
 
 """ CORES """
 
@@ -31,6 +36,33 @@ frame_superior.grid(row=0, column=0, columnspan=2)
 frame_inferior = Frame(janela, width=300, height=260, padx=0, pady=5, bg=cor0, relief='flat')
 frame_inferior.grid(row=1, column=0, sticky=NSEW)
 
+""" CONSUMINDO UMA API E CONVERTENDO DE UMA MOEDAPARA A OUTRA """
+
+def converter():
+    moeda_DE = combo_DE.get()
+    moeda_PARA = combo_PARA.get()
+    valor_entrada = valor.get()
+
+    response = requests.get(f"https://api.exchangerate-api.com/v4/latest/{moeda_DE}")
+    dados = json.loads(response.text)
+    cambio = dados['rates'][moeda_PARA]
+    resultado = float(valor_entrada) * float(cambio)
+
+    if moeda_PARA == 'USD':
+        simbolo = '$'
+    elif moeda_PARA == 'EUR':
+        simbolo = '€'
+    elif moeda_PARA == 'INR':
+        simbolo = '₹'
+    elif moeda_PARA == 'AOA':
+        simbolo = 'Kz'
+    else:
+        simbolo = 'R$'
+
+    moeda_equivalente = (f'{simbolo}{resultado:.2f}')
+    app_resultado['text'] = moeda_equivalente
+
+
 """ CONFIGURANDO FRAME_SUPERIOR """
 
 icon = Image.open('./imagem/icons8-money-64.png')
@@ -45,7 +77,7 @@ app_resultado = Label(frame_inferior, width=16, height=2, relief='solid', anchor
 app_resultado.place(x=50, y=10)
 
 """ LISTA DE MOEDAS """
-moeda = ['AOA', 'BRL', 'EUR', 'USD']
+moeda = ['AOA', 'BRL', 'EUR', 'USD', 'INR']
 
 app_DE = Label(frame_inferior, text='De:', width=12, height=1, relief='flat', anchor=NW, font=('Ivi 10 bold'), bg=cor0, fg=cor1)
 app_DE.place(x=48, y=90)
@@ -61,4 +93,8 @@ combo_PARA['values'] = (moeda)
 
 valor = Entry(frame_inferior, width=22, justify=CENTER, font=('Ivi 12 bold'), relief=SOLID)
 valor.place(x=50, y=155)
+
+botao = Button(frame_inferior, command=converter, text='Converter', width=19, padx=5, height=1, bg=cor2, fg=cor0, font=('Ivi 12 bold'), relief='raised', overrelief=RIDGE)
+botao.place(x=50, y=210)
+
 janela.mainloop()
