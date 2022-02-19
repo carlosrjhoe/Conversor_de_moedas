@@ -1,15 +1,12 @@
 from tkinter import Tk, ttk
 from tkinter import *
 
-
-
 """ IMPORTANDO BIBLIOTECAS EXTERNAS """
 
 from PIL import Image, ImageTk, ImageOps, ImageDraw
 import requests
 import json
 import string
-
 
 """ CORES """
 
